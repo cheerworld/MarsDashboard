@@ -91,6 +91,7 @@ const ImageOfTheDay = (apod) => {
     }
 }
 
+
 // ------------------------------------------------------  API CALLS
 
 // Example API call
