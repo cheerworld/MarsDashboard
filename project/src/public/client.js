@@ -1,3 +1,5 @@
+//const { Map } = require('immutable');
+
 let store = {
     user: { name: "Student" },
     apod: '',
@@ -20,6 +22,7 @@ const render = async (root, state) => {
 // create content
 const App = (state) => {
     let { rovers, apod } = state
+    //console.log(apod.image);
 
     return `
         <header></header>
@@ -68,12 +71,15 @@ const ImageOfTheDay = (apod) => {
 
     // If image does not already exist, or it is not from today -- request it again
     const today = new Date()
+
     const photodate = new Date(apod.date)
+
     console.log(photodate.getDate(), today.getDate());
 
     console.log(photodate.getDate() === today.getDate());
     if (!apod || apod.date === today.getDate() ) {
-        getImageOfTheDay(store)
+        getImageOfTheDay()
+
     }
 
     // check if the photo of the day is actually type video!
@@ -95,12 +101,22 @@ const ImageOfTheDay = (apod) => {
 // ------------------------------------------------------  API CALLS
 
 // Example API call
-const getImageOfTheDay = (state) => {
-    let { apod } = state
+const getImageOfTheDay = () => {
 
     fetch(`http://localhost:3000/apod`)
         .then(res => res.json())
         .then(apod => updateStore(store, { apod }))
+        console.log(store)
+
+
 
     return data
 }
+
+const getRoverInfo = () => {
+  fetch(`http://localhost:3000/roverInfo`)
+      .then(res => res.json())
+      .then(roverInfo => updateStore(store, roverInfo))
+
+}
+getRoverInfo()
