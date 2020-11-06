@@ -13,13 +13,17 @@ app.use(bodyParser.json())
 app.use('/', express.static(path.join(__dirname, '../public')))
 
 // your API calls
-app.get("/roverInfo", async (req, res) => {
+app.get("/roverInfo/:rover_name", async (req, res) => {
   const url = "https://api.nasa.gov/mars-photos/api/v1/";
-  const rover = "Curiosity";
   try {
-    let roverManifest = await fetch(`${url}manifests/${rover}?api_key=${process.env.API_KEY}`)
+    let roverManifest = await fetch(`${url}manifests/${req.params.rover_name}?api_key=${process.env.API_KEY}`)
         .then(res => res.json())
-    res.send({ roverManifest })
+  //  res.send({roverManifest})
+    let max_date = roverManifest["photo_manifest"]["max_date"]
+    let roverPhotos = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${req.params.rover_name}/photos?earth_date=${max_date}&api_key=${process.env.API_KEY}`)
+        .then(res => res.json())
+        res.send(roverPhotos)
+
   }catch (err) {
     console.log("errors:", err);
   }

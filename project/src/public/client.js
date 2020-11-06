@@ -18,14 +18,62 @@ const render = async (root, state) => {
     root.innerHTML = App(state)
 }
 
+const clickButton = (e) => {
+  console.log(e.value)
+  //location.assign("http://localhost:3000/roverInfo/" + e.value)
+  getRoverInfo(e.value)
+
+}
+
+const clickedContent = () => {
+  console.log(store.photos[0].rover)
+
+  return `
+  <ul class="roverInfo">
+    <li>Name: ${store.photos[0].rover.name}</li>
+    <li>ID: ${store.photos[0].rover.id}</li>
+    <li>Launch Date: ${store.photos[0].rover.launch_date}</li>
+    <li>Landing Date: ${store.photos[0].rover.landing_date}</li>
+    <li>Status: ${store.photos[0].rover.status}</li>
+    ${roverImages()}
+
+  </ul>
+  `
+
+}
+//
+const roverImages =() => {
+  const roverPhotos = store.photos.map(photo => {
+    return `<img src="${photo.img_src}">`
+  });
+
+    //return` <li><img src="${photo}"></li> `
+
+}
+
 
 // create content
 const App = (state) => {
     let { rovers, apod } = state
     //console.log(apod.image);
+    if (state.photos) {
+     return clickedContent()
 
+    }
     return `
-        <header></header>
+        <header>
+          <div class="roverContainer">
+            <button class="roverCard curiosity" type="button" value="curiosity" onclick = "clickButton(this)">
+              <h2 class="class-title">${rovers[0]}</h2>
+            </button>
+            <button class="roverCard opportunity" type="button" value="opportunity" onclick = "clickButton(this)">
+              <h2 class="class-title">${rovers[1]}</h2>
+            </button>
+              <button class="roverCard spirit" type="button" value="spirit" onclick = "clickButton(this)">
+              <h2 class="class-title">${rovers[2]}</h2>
+            </button>
+          </div>
+        </header>
         <main>
             ${Greeting(store.user.name)}
             <section>
@@ -44,7 +92,14 @@ const App = (state) => {
         </main>
         <footer></footer>
     `
+    document.querySelector(".curiosity").addEventListener("click", (e) => {
+      console.log(e)
+    })
+
 }
+
+
+
 
 // listening for load event because page should load before any JS is called
 window.addEventListener('load', () => {
@@ -110,13 +165,12 @@ const getImageOfTheDay = () => {
 
 
 
-    return data
+    //return data
 }
 
-const getRoverInfo = () => {
-  fetch(`http://localhost:3000/roverInfo`)
+const getRoverInfo = (roverName) => {
+  fetch(`http://localhost:3000/roverInfo/${roverName}`)
       .then(res => res.json())
       .then(roverInfo => updateStore(store, roverInfo))
-
+console.log(store)
 }
-getRoverInfo()
