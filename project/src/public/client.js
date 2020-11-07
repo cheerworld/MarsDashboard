@@ -1,16 +1,17 @@
-//const { Map } = require('immutable');
 
-let store = {
+let store = Immutable.Map({
     user: { name: "Student" },
     apod: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-}
+});
+
 
 // add our markup to the page
 const root = document.getElementById('root')
 
 const updateStore = (store, newState) => {
-    store = Object.assign(store, newState)
+    store = store.merge(newState)
+
     render(root, store)
 }
 
@@ -19,46 +20,42 @@ const render = async (root, state) => {
 }
 
 const clickButton = (e) => {
-  console.log(e.value)
-  //location.assign("http://localhost:3000/roverInfo/" + e.value)
-  getRoverInfo(e.value)
-
+//  console.log(e.value)
+ getRoverInfo(e.value)
 }
 
-const clickedContent = () => {
-  console.log(store.photos[0].rover)
-
+const clickedContent = (state) => {
+//console.log(store)
+//console.log(state.getIn(["photos", 0, "rover", "name"]))
   return `
   <ul class="roverInfo">
-    <li>Name: ${store.photos[0].rover.name}</li>
-    <li>ID: ${store.photos[0].rover.id}</li>
-    <li>Launch Date: ${store.photos[0].rover.launch_date}</li>
-    <li>Landing Date: ${store.photos[0].rover.landing_date}</li>
-    <li>Status: ${store.photos[0].rover.status}</li>
-    ${roverImages()}
-
+    <li>Name: ${state.getIn(["photos", 0, "rover", "name"])}</li>
+    <li>ID: ${state.getIn(["photos", 0, "rover", "id"])}</li>
+    <li>Launch Date: ${state.getIn(["photos", 0, "rover", "launch_date"])}</li>
+    <li>Landing Date: ${state.getIn(["photos", 0, "rover", "landing_date"])}</li>
+    <li>Status: ${state.getIn(["photos", 0, "rover", "status"])}</li>
   </ul>
+  ${roverImages(state)}
   `
 
 }
 //
-const roverImages =() => {
-  const roverPhotos = store.photos.map(photo => {
-    return `<img src="${photo.img_src}">`
-  });
-
-    //return` <li><img src="${photo}"></li> `
-
+const roverImages =(state) => {
+  return (state.get("photos")).map(photo => {
+    const photoURL = photo.get("img_src");
+    return `<img src="${photoURL}" class="roverImage">`
+  }).join('');
 }
 
 
 // create content
 const App = (state) => {
-    let { rovers, apod } = state
-    //console.log(apod.image);
-    if (state.photos) {
-     return clickedContent()
+    let rovers = state.get("rovers");
 
+    let apod = state.get("apod");
+    //console.log(state.get("photos"));
+    if (state.get("photos")) {
+     return clickedContent(state)
     }
     return `
         <header>
@@ -75,7 +72,7 @@ const App = (state) => {
           </div>
         </header>
         <main>
-            ${Greeting(store.user.name)}
+            ${Greeting(store.get("user").name)}
             <section>
                 <h3>Put things on the page!</h3>
                 <p>Here is an example section.</p>
@@ -92,9 +89,6 @@ const App = (state) => {
         </main>
         <footer></footer>
     `
-    document.querySelector(".curiosity").addEventListener("click", (e) => {
-      console.log(e)
-    })
 
 }
 
@@ -132,22 +126,22 @@ const ImageOfTheDay = (apod) => {
     console.log(photodate.getDate(), today.getDate());
 
     console.log(photodate.getDate() === today.getDate());
-    if (!apod || apod.date === today.getDate() ) {
+    if (!apod || apod.get("date") === today.getDate() ) {
         getImageOfTheDay()
 
     }
 
     // check if the photo of the day is actually type video!
-    if (apod.media_type === "video") {
+    if (apod.getIn(["image","media_type"]) === "video") {
         return (`
-            <p>See today's featured video <a href="${apod.url}">here</a></p>
-            <p>${apod.title}</p>
-            <p>${apod.explanation}</p>
+            <p>See today's featured video <a href="${apod.getIn(["image","url"])}">here</a></p>
+            <p>${apod.getIn(["image","title"])}</p>
+            <p>${apod.getIn(["image","explanation"])}</p>
         `)
     } else {
         return (`
-            <img src="${apod.image.url}" height="350px" width="100%" />
-            <p>${apod.image.explanation}</p>
+            <img src="${apod.getIn(["image","url"])}" height="350px" width="100%" />
+            <p>${apod.getIn(["image", "explanation"])}</p>
         `)
     }
 }
@@ -161,7 +155,7 @@ const getImageOfTheDay = () => {
     fetch(`http://localhost:3000/apod`)
         .then(res => res.json())
         .then(apod => updateStore(store, { apod }))
-        console.log(store)
+        //console.log(store)
 
 
 
@@ -171,6 +165,10 @@ const getImageOfTheDay = () => {
 const getRoverInfo = (roverName) => {
   fetch(`http://localhost:3000/roverInfo/${roverName}`)
       .then(res => res.json())
-      .then(roverInfo => updateStore(store, roverInfo))
-console.log(store)
+      .then(roverInfo => {
+        //console.log(roverInfo)
+        updateStore(store, roverInfo)
+      })
+
+
 }
