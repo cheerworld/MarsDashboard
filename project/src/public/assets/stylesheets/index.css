@@ -1,10 +1,12 @@
 /* -------------------  MOBILE  --------------------- */
 
 body {
+  line-height: 2;
+  font-size: 1.2rem;
+  color: #fcf1f1;
   display: flex;
   flex-direction: column;
   font-family: Arial;
-  color: white;
   min-height: 100vh;
   background-image: url("https://wallpapercave.com/wp/wp3493594.png");
 }
@@ -28,13 +30,76 @@ footer {
 
 }
 
+.title {
+  display: flex;
+  justify-content: center;
+  padding-top: 100px;
+  font-size: 1.3rem;
+}
+
+.roverButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  padding: 100px 100px;
+}
+
+.roverCard {
+  color: #fcf1f1;
+  width: 300px;
+  height: 300px;
+  margin: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("https://space-facts.com/wp-content/uploads/mars.jpg");
+  background-size: 0;
+  background-position: center;
+  transition: 2s;
+  background-repeat: no-repeat;
+  border-radius: 20px;
+  background-color: black;
+  opacity:0.5;
+  box-shadow: 10px 10px 10px #f9813a;
+}
+
+.roverCard:hover {
+  background-image: url("https://space-facts.com/wp-content/uploads/mars.jpg");
+  background-size: 110%;
+  opacity: 1;
+}
+
+.class-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.roverInfo {
+  font-size: 2rem;
+}
+
+.roverDiv {
+  padding-left: 10px;
+
+}
+
 .roverImage {
+  margin: 10px;
   width: 300px;
   height: 300px;
   border-radius: 10px;
-  border: 2px solid white;
+  border: 2px solid #f9813a;
   box-shadow: 0px 5px 10px 2px rgba(0, 0, 0, 0.5);
 }
+
+.apodSection {
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  padding: 100px 0;
+}
+
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
   /* use mobile */
@@ -44,10 +109,23 @@ footer {
 
 @media (min-width: 1224px) {
   /* use mobile */
+  .title {
+    font-size: 2rem;
+  }
+
+  .roverButton {
+    flex-direction:row;
+  }
+
+  .apodSection {
+    font-size: 2rem;
+  }
+
 }
 
 /* -------------------  LARGE SCREENS  -------------- */
 
 @media (min-width: 1824px) {
-  /* use mobile */
+
+
 }

@@ -1,6 +1,6 @@
 
 let store = Immutable.Map({
-    user: { name: "Student" },
+    user: { name: "Human" },
     apod: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
 });
@@ -28,6 +28,8 @@ const clickedContent = (state) => {
 //console.log(store)
 //console.log(state.getIn(["photos", 0, "rover", "name"]))
   return `
+
+  <div class="roverDiv">
   <ul class="roverInfo">
     <li>Name: ${state.getIn(["photos", 0, "rover", "name"])}</li>
     <li>ID: ${state.getIn(["photos", 0, "rover", "id"])}</li>
@@ -35,13 +37,16 @@ const clickedContent = (state) => {
     <li>Landing Date: ${state.getIn(["photos", 0, "rover", "landing_date"])}</li>
     <li>Status: ${state.getIn(["photos", 0, "rover", "status"])}</li>
   </ul>
+  </div>
+  <div class="roverImagesDiv">
   ${roverImages(state)}
+  </div>
   `
 
 }
 //
 const roverImages =(state) => {
-  return (state.get("photos")).map(photo => {
+  return (state.get("photos")).slice(0, 30).map(photo => {
     const photoURL = photo.get("img_src");
     return `<img src="${photoURL}" class="roverImage">`
   }).join('');
@@ -52,14 +57,23 @@ const roverImages =(state) => {
 const App = (state) => {
     let rovers = state.get("rovers");
 
-    let apod = state.get("apod");
-    //console.log(state.get("photos"));
+    let apod = state.getIn(["apod", "image"]);
+    //console.log(apod);
     if (state.get("photos")) {
-     return clickedContent(state)
+     return clickedContent(state);
     }
+
+    if (apod) {
+      return dailyImageContentClick(state);
+    }
+
+
     return `
         <header>
-          <div class="roverContainer">
+        <div class="title">
+        <h1>Mars Rover Dashboard</h1>
+        </div>
+          <div class="roverButton">
             <button class="roverCard curiosity" type="button" value="curiosity" onclick = "clickButton(this)">
               <h2 class="class-title">${rovers[0]}</h2>
             </button>
@@ -70,26 +84,41 @@ const App = (state) => {
               <h2 class="class-title">${rovers[2]}</h2>
             </button>
           </div>
+          <div>
+           <button class="getImageDailyButton" type="button" value="apod" onclick = "clickDailyImageButton(this)">
+           <h2>Daily Image From NASA</h2>
+           </button>
+          </div>
         </header>
-        <main>
-            ${Greeting(store.get("user").name)}
-            <section>
-                <h3>Put things on the page!</h3>
-                <p>Here is an example section.</p>
-                <p>
-                    One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
-                    the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
-                    This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
-                    applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
-                    explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
-                    but generally help with discoverability of relevant imagery.
-                </p>
-                ${ImageOfTheDay(apod)}
-            </section>
-        </main>
+
         <footer></footer>
     `
 
+}
+
+const clickDailyImageButton = (e) => {
+ //console.log(e.value)
+ getImageOfTheDay(e.value)
+}
+
+const dailyImageContentClick = (state) => {
+  console.log(state.get("apod"))
+  return `
+  <main>
+      ${Greeting(state.get("user").name)}
+      <section>
+          <p>
+              One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
+              the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
+              This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
+              applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
+              explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
+              but generally help with discoverability of relevant imagery.
+          </p>
+          ${ImageOfTheDay(state.get("apod"))}
+      </section>
+  </main>
+  `
 }
 
 
@@ -106,7 +135,9 @@ window.addEventListener('load', () => {
 const Greeting = (name) => {
     if (name) {
         return `
-            <h1>Welcome, ${name}!</h1>
+        <div class="apodSection">
+            <h2>Welcome to Astronomy Picture of the Day ${name}!</h2>
+          </div>
         `
     }
 
@@ -121,15 +152,15 @@ const ImageOfTheDay = (apod) => {
     // If image does not already exist, or it is not from today -- request it again
     const today = new Date()
 
-    const photodate = new Date(apod.date)
+    const photodate = new Date(apod.getIn(["image", "date"]))
 
     console.log(photodate.getDate(), today.getDate());
 
     console.log(photodate.getDate() === today.getDate());
-    if (!apod || apod.get("date") === today.getDate() ) {
-        getImageOfTheDay()
+    //if (!apod || apod.get("date") === today.getDate() ) {
+        //getImageOfTheDay()
 
-    }
+    //}
 
     // check if the photo of the day is actually type video!
     if (apod.getIn(["image","media_type"]) === "video") {
@@ -138,10 +169,16 @@ const ImageOfTheDay = (apod) => {
             <p>${apod.getIn(["image","title"])}</p>
             <p>${apod.getIn(["image","explanation"])}</p>
         `)
+    } else if (apod.getIn(["image", "code"]) === 404) {
+      return (`
+            <p>${apod.getIn(["image", "msg"])}</p>
+            <p>Please check back later after a few hours or a day.</p>
+        `)
     } else {
         return (`
             <img src="${apod.getIn(["image","url"])}" height="350px" width="100%" />
             <p>${apod.getIn(["image", "explanation"])}</p>
+
         `)
     }
 }
@@ -150,9 +187,9 @@ const ImageOfTheDay = (apod) => {
 // ------------------------------------------------------  API CALLS
 
 // Example API call
-const getImageOfTheDay = () => {
+const getImageOfTheDay = (apod) => {
 
-    fetch(`http://localhost:3000/apod`)
+    fetch(`http://localhost:3000/${apod}`)
         .then(res => res.json())
         .then(apod => updateStore(store, { apod }))
         //console.log(store)
