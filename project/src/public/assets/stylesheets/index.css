@@ -22,6 +22,7 @@ main {
 footer {
   display: flex;
   justify-content: center;
+  padding: 50px 0;
 }
 
 .bg {
@@ -74,7 +75,7 @@ footer {
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
-  padding: 20px 200px 100px;
+  padding: 20px 200px 50px;
 }
 
 .getNewDataButton {
@@ -164,6 +165,39 @@ footer {
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.stars {
+  background-color: #ffd5cd;
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  animation-iteration-count: infinite;
+}
+
+.star-1 {
+  margin-left: 95%;
+  animation-duration: 1s;
+  animation-name: twinkle;
+}
+
+.star-2 {
+  margin-left: 5%;
+  animation-duration: 2s;
+  animation-name: twinkle;
+}
+
+.star-3 {
+  margin-left: 50%;
+  animation-duration: 1.5s;
+  animation-name: twinkle;
+}
+
+@keyframes twinkle {
+  20% {
+    transform: scale(0.5);
+    opacity: 0.5;
+  }
 }
 
 /* -------------------  TABLET  --------------------- */

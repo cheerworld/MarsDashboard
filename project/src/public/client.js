@@ -44,9 +44,11 @@ const App = (state) => {
 
   return `
         <header>
+        <div class="star-2 stars"></div>
         <div class="title">
         <h1>Mars Rover Dashboard</h1>
         </div>
+        <div class="star-1 stars"></div>
 
           <div class="roverButton">
             <button class="roverCard curiosity" type="button" value=${rovers.get(0)} onclick = "clickRoverButton(this)">
@@ -71,6 +73,7 @@ const App = (state) => {
            <h2 class="newDataTitle">Mars Weather Report</h2>
            </button>
           </div>
+          <div class="star-3 stars"></div>
         </header>
         <footer>🚀🌌 Made by Cheer Zhao on 🌏 with ❤️‍🔥</footer>
     `
@@ -256,18 +259,24 @@ const marsWeatherBackButton = () => {
 // ------------------------------------------------------  API CALLS
 
 // Example API call
-const getImageOfTheDay = (apod) => {
-
-  fetch(`http://localhost:3000/${apod}`)
-    .then(res => res.json())
-    .then(apod => updateStore(store, {
-      apod
-    }))
+const getImageOfTheDay = async (apod) => {
+  try {
+    await fetch(`http://localhost:3000/${apod}`)
+      .then(res => res.json())
+      .then(apod => updateStore(store, {
+        apod
+      }))
+  } catch (error) {
+    console.log("errors:", err);
+  }
 };
 //Get roverInfo API call
-const getRoverInfo = (roverName) => {
-
-  fetch(`http://localhost:3000/roverInfo/${roverName}`)
-    .then(res => res.json())
-    .then(roverInfo => updateStore(store, roverInfo))
+const getRoverInfo = async (roverName) => {
+  try {
+    await fetch(`http://localhost:3000/roverInfo/${roverName}`)
+      .then(res => res.json())
+      .then(roverInfo => updateStore(store, roverInfo))
+  } catch (error) {
+    console.log("errors:", err);
+  }
 };

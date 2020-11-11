@@ -43,7 +43,7 @@ app.get('/apod', async (req, res) => {
     });
 
   } catch (err) {
-    console.log('error:', err);
+    console.log("error:", err);
   }
 })
 
