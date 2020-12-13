@@ -13,7 +13,7 @@ Please follow these steps to get started:
 
  - [ ] To clone the repo:
 
-```git clone --<repo-name>```
+```git clone https://github.com/cheerworld/MarsDashboard.git```
 
  - [ ] For this project we are using yarn as our package manager, so to install your dependencies run:
 
